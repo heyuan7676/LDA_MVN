@@ -1,7 +1,3 @@
-### 1) No periodic savings
-### 2) split randomly -- to test stability of using perplexity as the metric
-### 3) use quantile normalized features
-
 import numpy as np
 import pandas as pd
 import time
