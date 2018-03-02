@@ -1,61 +1,3 @@
-
-# coding: utf-8
-
-# In[103]:
-
-
-import pandas as pd
-import numpy as np
-
-data = pd.read_csv("Features.csv",sep='\t',index_col = 0)
-#data = data.iloc[np.random.choice(range(len(data)),1000)]
-words_in_each_gene = data.groupby(data.index).sum()
-
-gene_exp = pd.read_csv('gibbs/Whole_Blood__rsem_uniquelymapped_genes_certain_biotypes_TPM_withGeneNames.txt',sep='\t', index_col = 0)
-gene_exp_distribution = np.log(np.mean(gene_exp + 1e-10, axis=1))
-
-
-# In[145]:
-
-
-baits_exp = [np.mean(np.mean(np.exp(gene_exp.loc[np.intersect1d(x.split('_'),np.array(gene_exp.index))]),axis=1))  for x in list(words_in_each_gene.index)]
-baits_exp = np.array(baits_exp)
-baits_exp[np.isnan(baits_exp)] = 1e-10
-baits_exp = np.log(baits_exp)
-
-corpos = (baits_exp < np.percentile(gene_exp_distribution, 75)) * 1
-corpos = [str(t) for t in corpos]
-
-
-# In[149]:
-
-
-words_in_txt = [np.repeat(np.array(words_in_each_gene.columns), t.astype('int'),axis=0) for t in np.array(np.ceil(words_in_each_gene))]
-
-
-train_idx = np.random.choice(range(len(chr_names)), int(len(chr_names) * 0.8), replace=False)
-test_idx = [a for a in range(len(chr_names)) if a not in train_idx]
-
-output = open('gibbs/input-train.txt','w')
-for k in list(train_idx):
-    output.write('\t'.join([corpos[k]] + list(words_in_txt[k])))
-    output.write('\n')
-output.close()
-
-
-
-output = open('gibbs/input-test.txt','w')
-for k in list(test_idx):
-    output.write('\t'.join([corpos[k]] + list(words_in_txt[k])))
-    output.write('\n')
-output.close()
-
-
-# In[150]:
-
-
-#!/usr/bin/python
-
 import os
 import sys
 import pandas as pd
@@ -336,7 +278,6 @@ def phi_addindex(phi, words_index):
 
 
 
-
 def main(train='gibbs/input-train.txt', test='gibbs/input-test.txt', output='gibbs/output.txt', K=10, lmda=.5, alpha=.1, beta=.01, iter_max=200, burn_in=100):
     filename_train = os.path.join(train)
     filename_test = os.path.join(test)
@@ -378,12 +319,13 @@ def main(train='gibbs/input-train.txt', test='gibbs/input-test.txt', output='gib
     phi1.to_csv('%s-phi1' % output, sep=' ', index=True, header=False)
 
 
-# In[ ]:
 
 
-lmda=.5
-alpha=.1
-beta=.01
+if __name__ == "__main__":
 
-main(lmda=lmda, alpha=alpha, beta=beta)
+    lmda=.5
+    alpha=.1
+    beta=.01
+
+    main(lmda=lmda, alpha=alpha, beta=beta)
 

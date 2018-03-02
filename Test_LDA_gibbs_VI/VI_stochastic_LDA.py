@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 import numpy as np
 import pandas as pd
 from collections import Counter
@@ -149,29 +143,21 @@ class LDA:
             
 
 
-# In[ ]:
+if __name__ == '__main__':
+    genes = LDA("Features.csv",4)
+    genes.update_stochastic(20,1000)
 
+    output = "VI/VI_stochatic_K4"
 
-genes = LDA("Features.csv",4)
-genes.update_stochastic(20,1000)
+    np.savez('%s-ELBO' %output, genes.ELBO)
+    np.savez('%s-t' % output, genes.T)
+    np.savez('%s-gamma' % output, genes.gammma)
+    np.savez('%s-lambda' % output, genes.lambbda)
+    np.savez('%s-phi' % output, genes.phi)
+    np.savez('%s-data-used' % output, genes.Wn)
+    np.savez('%s-vocabulary-to-int' % output, genes.vocabulary_in_int)
 
-
-# In[ ]:
-
-
-output = "VI/VI_stochatic_K4"
-
-np.savez('%s-ELBO' %output, genes.ELBO)
-np.savez('%s-t' % output, genes.T)
-np.savez('%s-gamma' % output, genes.gammma)
-np.savez('%s-lambda' % output, genes.lambbda)
-np.savez('%s-phi' % output, genes.phi)
-np.savez('%s-data-used' % output, genes.Wn)
-np.savez('%s-vocabulary-to-int' % output, genes.vocabulary_in_int)
-
-
-
-with open("%s.pickle" % output, 'wb') as handle:
-    pickle.dump(genes, handle)
+    with open("%s.pickle" % output, 'wb') as handle:
+        pickle.dump(genes, handle)
 
 
